@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <h1>Ahmed mohsen test</h1>
+    
+    <h1>Chat</h1>
+    <label for="">Pseudo:</label>
+    <input type="text" id="pseudo"  required >
+    <label for="">Content:</label>
+    <input type="text" id="content"  required>
+    <button onclick="addMessage()">Envoyer</button>
+    <div id="messages"></div>
+    
+    <script>
+        const socket = io.connect();
+            socket.on("msg",(data)=>{
+                p = document.createElement("p")
+                p.innerText = (data.pseudo + ": " +data.content)
+                document.body.append(p)
+            })
+            socket.on("disconnect1",(data)=>{
+                p = document.createElement("p")
+                p.innerText = (data)
+                document.body.append(p)
+            })
+            function addMessage(){
+                socket.emit("msg",{"pseudo":document.getElementById("pseudo").value,"content":document.getElementById("content").value})
+            }
+
+            document.getElementById("content").addEventListener("keyup",()=>{
+                socket.emit('typing', document.getElementById("pseudo").value);
+            })
+                socket.on("typing", (name) => {
+                    // alert(`${name} is typing...`)
+                    document.getElementById("messages").innerHTML = `<p><em>${name}</em> is typing...</p>`;
+        setTimeout(() => {
+            document.getElementById("messages").innerHTML = "";
+        }, 3000); 
+        })
+
+        </script>
+</body>
+</html>
